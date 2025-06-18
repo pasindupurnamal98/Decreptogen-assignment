@@ -4,36 +4,46 @@ import numpy as np
 import pickle
 import joblib
 
-st.set_page_config(page_title="Personality Predictor", layout="wide")
+# Page configuration
+st.set_page_config(page_title="✨ Personality Predictor", page_icon="🧠", layout="wide")
 
-st.title("Introvert/Extrovert Personality Predictor")
+# Title with emoji
+st.markdown("""
+    <div style='text-align: center; padding: 20px 0 10px 0;'>
+        <h1 style='color:#4A4A4A;'>🧠 Introvert vs. Extrovert Personality Predictor</h1>
+        <p style='font-size:18px; color: #666;'>Discover your dominant personality trait based on your lifestyle preferences</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.write("""
-### Enter your characteristics to predict if you're an introvert or extrovert
-Please fill in all the fields below:
-""")
+# Instructions
+st.markdown("### 📝 Please provide the following details:")
 
-# Create input fields
+# Stylish containers for inputs
+st.markdown("---")
+st.markdown("#### 👇 Personal Habits")
 col1, col2 = st.columns(2)
 
 with col1:
-    time_alone = st.slider("Time spent alone (hours per day)", 1, 11, 5)
-    stage_fear = st.selectbox("Do you have stage fear?", ["Yes", "No"])
-    social_events = st.slider("Social event attendance (per month)", 1, 10, 5)
-    going_outside = st.slider("Frequency of going outside (days per week)", 1, 7, 4)
+    time_alone = st.slider("⏱️ Time spent alone (hours/day)", 1, 11, 5)
+    stage_fear = st.selectbox("🎤 Do you have stage fear?", ["Yes", "No"])
+    social_events = st.slider("🎉 Social event attendance (per month)", 1, 10, 5)
+    going_outside = st.slider("🚶 Frequency of going outside (days/week)", 1, 7, 4)
 
 with col2:
-    drained_socializing = st.selectbox("Do you feel drained after socializing?", ["Yes", "No"])
-    friends_circle = st.slider("Number of close friends", 1, 15, 7)
-    post_frequency = st.slider("Social media post frequency (per week)", 1, 10, 5)
+    drained_socializing = st.selectbox("😩 Feel drained after socializing?", ["Yes", "No"])
+    friends_circle = st.slider("👥 Number of close friends", 1, 15, 7)
+    post_frequency = st.slider("📱 Social media post frequency (per week)", 1, 10, 5)
 
-# Create prediction button
-if st.button("Predict Personality"):
+st.markdown("---")
+
+# 🌟 Predict Button
+if st.button("🔍 Predict My Personality"):
     try:
-        # Load the complete pipeline
+        # Load pipeline and model info
         pipeline = joblib.load('best_personality_model_pipeline.pkl')
-        
-        # Create input DataFrame
+        model_info = pickle.load(open('comprehensive_model_info.pkl', 'rb'))
+
+        # Input DataFrame
         input_data = pd.DataFrame({
             'Time_spent_Alone': [time_alone],
             'Stage_fear': [stage_fear],
@@ -44,75 +54,66 @@ if st.button("Predict Personality"):
             'Post_frequency': [post_frequency]
         })
 
-        # Make prediction using the pipeline
+        # Prediction
         prediction = pipeline.predict(input_data)
-        
-        # Load model info to get prediction probabilities
-        model_info = pickle.load(open('comprehensive_model_info.pkl', 'rb'))
-        
-        # Display result with styling
-        st.markdown("### Prediction Result")
-        result = "Introvert" if prediction[0] == 0 else "Extrovert"
-        
-        # Get prediction probabilities
         prediction_proba = pipeline.predict_proba(input_data)[0]
-        intro_prob = prediction_proba[0]
-        extro_prob = prediction_proba[1]
-        
-        if result == "Introvert":
-            st.markdown(f"""
-            <div style='background-color: #E8F4F9; padding: 20px; border-radius: 10px;'>
-                <h3 style='color: #2C3E50;'>You are predicted to be an: {result}</h3>
-                <p>Confidence: {intro_prob:.2%}</p>
-                <p>Introverts tend to:</p>
-                <ul>
-                    <li>Recharge by spending time alone</li>
-                    <li>Prefer deeper one-on-one conversations</li>
-                    <li>Think before speaking</li>
-                    <li>Feel drained after social interactions</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div style='background-color: #F9E8E8; padding: 20px; border-radius: 10px;'>
-                <h3 style='color: #2C3E50;'>You are predicted to be an: {result}</h3>
-                <p>Confidence: {extro_prob:.2%}</p>
-                <p>Extroverts tend to:</p>
-                <ul>
-                    <li>Gain energy from social interactions</li>
-                    <li>Enjoy group activities</li>
-                    <li>Think while speaking</li>
-                    <li>Feel energized after social events</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
+        result = "Introvert" if prediction[0] == 0 else "Extrovert"
+        confidence = prediction_proba[0] if result == "Introvert" else prediction_proba[1]
 
-        # Display model performance metrics
-        st.markdown("### Model Performance")
+        # 📊 Display Results
+        bg_color = "#E8F4F9" if result == "Introvert" else "#F9E8E8"
+        emoji = "🌙" if result == "Introvert" else "🌞"
+
+        personality_traits = """
+            <li>Recharge by spending time alone</li>
+            <li>Prefer deep one-on-one conversations</li>
+            <li>Think before speaking</li>
+            <li>May feel drained after social interactions</li>
+        """ if result == "Introvert" else """
+            <li>Gain energy from social interactions</li>
+            <li>Enjoy group activities</li>
+            <li>Think while speaking</li>
+            <li>Feel energized after social events</li>
+        """
+
         st.markdown(f"""
-        - Model Type: {model_info['selected_model_name']}
-        - Test Accuracy: {model_info['performance_metrics']['test_accuracy']:.2%}
-        - F1-Score: {model_info['performance_metrics']['test_f1']:.2%}
-        """)
+            <div style="background-color: {bg_color}; padding: 25px; border-radius: 10px; margin-top: 10px;">
+                <h2 style="color:#2C3E50;">{emoji} You are predicted to be an: <span style="color: #0073e6;">{result}</span></h2>
+                <p style="font-size:16px;"><strong>Confidence:</strong> {confidence:.2%}</p>
+                <p><strong>Personality Traits:</strong></p>
+                <ul style="line-height: 1.6;">{personality_traits}</ul>
+            </div>
+        """, unsafe_allow_html=True)
+
+        # # 📈 Display Model Stats
+        # st.markdown("### 🔍 Model Performance")
+        # st.success(f"""
+        #     - 🤖 Model Used: **{model_info['selected_model_name']}**
+        #     - ✅ Test Accuracy: **{model_info['performance_metrics']['test_accuracy']:.2%}**
+        #     - 📏 F1 Score: **{model_info['performance_metrics']['test_f1']:.2%}**
+        # """)
 
     except Exception as e:
-        st.error(f"Error making prediction: {str(e)}")
+        st.error(f"⚠️ Error making prediction: {str(e)}")
 
-# Add explanation section
+# 📘 Feature Explanation
+st.markdown("---")
+st.markdown("### ℹ️ About the Features")
 st.markdown("""
-### About the Features
-- **Time spent alone**: Average hours spent alone per day
-- **Stage fear**: Whether you experience anxiety when speaking in public
-- **Social event attendance**: Number of social events attended per month
-- **Going outside**: Days per week spent outside home
-- **Drained after socializing**: Whether you feel tired after social interactions
-- **Friends circle size**: Number of close friends
-- **Post frequency**: Number of social media posts per week
+- **⏱️ Time spent alone**: Average hours you enjoy solitude each day
+- **🎤 Stage fear**: Fear or nervousness while speaking in public
+- **🎉 Social event attendance**: Number of events you attend in a month
+- **🚶 Going outside**: Weekly frequency of spending time outside the house
+- **😩 Drained after socializing**: Feeling exhausted post social events
+- **👥 Friends circle size**: Number of close friends you have
+- **📱 Post frequency**: Weekly count of your social media posts
 """)
 
-# Add footer
+# Footer ✨
 st.markdown("""
 ---
-Created with ❤️ using Streamlit
-""")
+<div style='text-align: center; padding-top: 10px; color: gray;'>
+    Created with ❤️ using <strong>Streamlit</strong><br>
+    © 2025 Personality Predictor
+</div>
+""", unsafe_allow_html=True)
