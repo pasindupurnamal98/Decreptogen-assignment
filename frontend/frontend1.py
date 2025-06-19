@@ -110,10 +110,11 @@ st.markdown("""
 """)
 
 # Footer ✨
+
 st.markdown("""
 ---
 <div style='text-align: center; padding-top: 10px; color: gray;'>
-    Created with ❤️ using <strong>Streamlit</strong><br>
-    © 2025 Personality Predictor
+    Created by <strong>Pasindu Purnamal</strong> with ❤️ using <strong>Streamlit</strong><br>
+    © 2025 Personality Predictor. All rights reserved.
 </div>
 """, unsafe_allow_html=True)
