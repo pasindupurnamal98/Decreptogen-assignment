@@ -3,16 +3,14 @@ import pandas as pd
 import numpy as np
 import pickle
 import joblib
-import time  # For loading animation
 
-# Page Configuration
+# Page configuration
 st.set_page_config(page_title="✨ Personality Predictor", page_icon="🧠", layout="wide")
 
 # Title with emoji
 st.markdown("""
     <div style='text-align: center; padding: 20px 0 10px 0;'>
-        <h1 style='color:#4A4A4A;'>🧠 Intr
-        overt vs. Extrovert Personality Predictor</h1>
+        <h1 style='color:#4A4A4A;'>🧠 Introvert vs. Extrovert Personality Predictor</h1>
         <p style='font-size:18px; color: #666;'>Discover your dominant personality trait based on your lifestyle preferences</p>
     </div>
     """, unsafe_allow_html=True)
@@ -41,32 +39,28 @@ st.markdown("---")
 # 🌟 Predict Button
 if st.button("🔍 Predict My Personality"):
     try:
-        with st.spinner("🔍 Analyzing your personality... Please wait!"):
-            time.sleep(2)  # Simulate prediction delay (for UX)
+        # Load pipeline and model info
+        pipeline = joblib.load('best_personality_model_pipeline.pkl')
+        model_info = pickle.load(open('comprehensive_model_info.pkl', 'rb'))
 
-            # Load the model pipeline and metadata
-            pipeline = joblib.load('best_personality_model_pipeline.pkl')
-            model_info = pickle.load(open('comprehensive_model_info.pkl', 'rb'))
+        # Input DataFrame
+        input_data = pd.DataFrame({
+            'Time_spent_Alone': [time_alone],
+            'Stage_fear': [stage_fear],
+            'Social_event_attendance': [social_events],
+            'Going_outside': [going_outside],
+            'Drained_after_socializing': [drained_socializing],
+            'Friends_circle_size': [friends_circle],
+            'Post_frequency': [post_frequency]
+        })
 
-            # Create DataFrame from input
-            input_data = pd.DataFrame({
-                'Time_spent_Alone': [time_alone],
-                'Stage_fear': [stage_fear],
-                'Social_event_attendance': [social_events],
-                'Going_outside': [going_outside],
-                'Drained_after_socializing': [drained_socializing],
-                'Friends_circle_size': [friends_circle],
-                'Post_frequency': [post_frequency]
-            })
+        # Prediction
+        prediction = pipeline.predict(input_data)
+        prediction_proba = pipeline.predict_proba(input_data)[0]
+        result = "Introvert" if prediction[0] == 0 else "Extrovert"
+        confidence = prediction_proba[0] if result == "Introvert" else prediction_proba[1]
 
-            # Prediction
-            prediction = pipeline.predict(input_data)
-            prediction_proba = pipeline.predict_proba(input_data)[0]
-
-            result = "Introvert" if prediction[0] == 0 else "Extrovert"
-            confidence = prediction_proba[0] if result == "Introvert" else prediction_proba[1]
-
-        # ✅ Display the results
+        # 📊 Display Results
         bg_color = "#E8F4F9" if result == "Introvert" else "#F9E8E8"
         emoji = "🌙" if result == "Introvert" else "🌞"
 
@@ -91,7 +85,7 @@ if st.button("🔍 Predict My Personality"):
             </div>
         """, unsafe_allow_html=True)
 
-        # Optional: Model Performance (if you want to show)
+        # # 📈 Display Model Stats
         # st.markdown("### 🔍 Model Performance")
         # st.success(f"""
         #     - 🤖 Model Used: **{model_info['selected_model_name']}**
@@ -100,7 +94,7 @@ if st.button("🔍 Predict My Personality"):
         # """)
 
     except Exception as e:
-        st.error(f"⚠️ Error during prediction: {str(e)}")
+        st.error(f"⚠️ Error making prediction: {str(e)}")
 
 # 📘 Feature Explanation
 st.markdown("---")
@@ -116,6 +110,7 @@ st.markdown("""
 """)
 
 # Footer ✨
+
 st.markdown("""
 ---
 <div style='text-align: center; padding-top: 10px; color: gray;'>
