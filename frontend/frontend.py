@@ -26,15 +26,15 @@ st.markdown("#### 👇 Personal Habits")
 col1, col2 = st.columns(2)
 
 with col1:
-    time_alone = st.slider("⏱️ Time spent alone (hours/day)", 1, 11, 5)
+    time_alone = st.slider("⏱️ Time spent alone (hours/day)", 0, 11, 5)
     stage_fear = st.selectbox("🎤 Do you have stage fear?", ["Yes", "No"])
-    social_events = st.slider("🎉 Social event attendance (per month)", 1, 10, 5)
-    going_outside = st.slider("🚶 Frequency of going outside (days/week)", 1, 7, 4)
+    social_events = st.slider("🎉 Social event attendance (per month)", 0, 10, 5)
+    going_outside = st.slider("🚶 Frequency of going outside (days/week)", 0, 7, 4)
 
 with col2:
     drained_socializing = st.selectbox("😩 Feel drained after socializing?", ["Yes", "No"])
-    friends_circle = st.slider("👥 Number of close friends", 1, 15, 7)
-    post_frequency = st.slider("📱 Social media post frequency (per week)", 1, 10, 5)
+    friends_circle = st.slider("👥 Number of close friends", 0, 15, 7)
+    post_frequency = st.slider("📱 Social media post frequency (per week)", 0, 10, 5)
 
 st.markdown("---")
 
@@ -63,7 +63,7 @@ if st.button("🔍 Predict My Personality"):
             prediction = pipeline.predict(input_data)
             prediction_proba = pipeline.predict_proba(input_data)[0]
 
-            result = "Introvert" if prediction[0] == 0 else "Extrovert"
+            result = "Introvert" if prediction[0] == 1 else "Extrovert"
             confidence = prediction_proba[0] if result == "Introvert" else prediction_proba[1]
 
         # ✅ Display the results
