@@ -11,8 +11,7 @@ st.set_page_config(page_title="✨ Personality Predictor", page_icon="🧠", lay
 # Title with emoji
 st.markdown("""
     <div style='text-align: center; padding: 20px 0 10px 0;'>
-        <h1 style='color:#4A4A4A;'>🧠 Intr
-        overt vs. Extrovert Personality Predictor</h1>
+        <h1 style='color:#4A4A4A;'>🧠 Introvert vs. Extrovert Personality Predictor</h1>
         <p style='font-size:18px; color: #666;'>Discover your dominant personality trait based on your lifestyle preferences</p>
     </div>
     """, unsafe_allow_html=True)
@@ -64,7 +63,7 @@ if st.button("🔍 Predict My Personality"):
             prediction_proba = pipeline.predict_proba(input_data)[0]
 
             result = "Introvert" if prediction[0] == 1 else "Extrovert"
-            confidence = prediction_proba[0] if result == "Introvert" else prediction_proba[1]
+            confidence = prediction_proba[1] if result == "Introvert" else prediction_proba[0]
 
         # ✅ Display the results
         bg_color = "#E8F4F9" if result == "Introvert" else "#F9E8E8"
